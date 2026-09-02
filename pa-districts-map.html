@@ -63,8 +63,7 @@
   .app.collapse-left.collapse-right { grid-template-columns: 0px 1fr 0px; }
 
   .panel-toggle {
-    position: absolute;
-    top: 50%;
+    position: fixed;
     transform: translateY(-50%);
     z-index: 1000;
     pointer-events: auto;
@@ -85,8 +84,8 @@
   }
   .panel-toggle:hover { background: var(--primary-deep); opacity: 1; transform: translateY(-50%) scale(1.08); box-shadow: 0 2px 6px rgba(23,35,59,0.3); }
   .panel-toggle svg { display: block; width: 14px; height: 12px; transition: transform 0.2s ease; }
-  .panel-toggle-left { grid-column: 1; grid-row: 2; right: -14px; top: 50%; }
-  .panel-toggle-right { grid-column: 1; grid-row: 2; right: -46px; top: 50%; }
+  /* top/left are set directly via JS (position: fixed, computed from the
+     controls panel's real on-screen edge) -- see setupPanelToggles(). */
   .panel-toggle-right svg { transform: scaleX(-1); }
   .app.collapse-left .panel-toggle-left svg { transform: scaleX(-1); }
   .app.collapse-right .panel-toggle-right svg { transform: scaleX(1); }
@@ -8501,22 +8500,30 @@ document.getElementById('zoom-reset').addEventListener('click', resetZoom);
 // localStorage is unavailable (private browsing, etc.).
 (function setupPanelToggles() {
   const appEl = document.querySelector('.app');
+  const leftPanelEl = document.querySelector('.controls');
   const leftBtn = document.getElementById('toggle-left-panel');
   const rightBtn = document.getElementById('toggle-right-panel');
 
-  // Align the left-panel toggle's vertical position with the "U.S. House"
-  // row under "Legislative Districts" in the sidebar.
-  function alignLeftToggle() {
+  // Both buttons are position: fixed, positioned in real viewport pixels
+  // computed from the left panel's actual on-screen edge -- deliberately
+  // NOT relying on CSS Grid's "absolutely-positioned grid item uses its
+  // grid area as containing block" behavior, to rule that out as a source
+  // of inconsistent rendering. Recomputed on load, on resize, and after
+  // each collapse/expand (the edge itself moves then).
+  function positionToggles() {
     const schoolsToggle = document.getElementById('schools-toggle');
-    if (!schoolsToggle) return;
-    const appRect = appEl.getBoundingClientRect();
-    const stRect = schoolsToggle.getBoundingClientRect();
-    const y = (stRect.top + stRect.height / 2 - appRect.top) + 'px';
-    leftBtn.style.top = y;
-    rightBtn.style.top = y; // keep both buttons aligned at the same height
+    const lpRect = leftPanelEl.getBoundingClientRect();
+    const y = schoolsToggle
+      ? (schoolsToggle.getBoundingClientRect().top + schoolsToggle.getBoundingClientRect().height / 2)
+      : (lpRect.top + lpRect.height / 2);
+    const edgeX = lpRect.right; // moves to 0 when the left panel is collapsed
+    leftBtn.style.top = y + 'px';
+    leftBtn.style.left = (edgeX - 14) + 'px';
+    rightBtn.style.top = y + 'px';
+    rightBtn.style.left = (edgeX + 18) + 'px';
   }
-  alignLeftToggle();
-  window.addEventListener('resize', alignLeftToggle);
+  positionToggles();
+  window.addEventListener('resize', positionToggles);
 
   function readState(key) {
     try { return localStorage.getItem(key) === '1'; } catch (e) { return false; }
@@ -8529,15 +8536,16 @@ document.getElementById('zoom-reset').addEventListener('click', resetZoom);
     appEl.classList.toggle('collapse-left', collapsed);
     leftBtn.setAttribute('aria-label', collapsed ? 'Expand left panel' : 'Collapse left panel');
     leftBtn.title = collapsed ? 'Expand left panel' : 'Collapse left panel';
-    // Leaflet needs to know its container size changed once the collapse
-    // transition finishes, or the map stays rendered at the old size.
-    setTimeout(() => map.invalidateSize(), 260);
+    // Leaflet needs to know its container size changed, and the buttons
+    // need to re-track the panel's now-moved edge, once the collapse
+    // transition finishes.
+    setTimeout(() => { map.invalidateSize(); positionToggles(); }, 260);
   }
   function applyRight(collapsed) {
     appEl.classList.toggle('collapse-right', collapsed);
     rightBtn.setAttribute('aria-label', collapsed ? 'Expand right panel' : 'Collapse right panel');
     rightBtn.title = collapsed ? 'Expand right panel' : 'Collapse right panel';
-    setTimeout(() => map.invalidateSize(), 260);
+    setTimeout(() => { map.invalidateSize(); positionToggles(); }, 260);
   }
 
   applyLeft(readState('panelCollapsedLeft'));
