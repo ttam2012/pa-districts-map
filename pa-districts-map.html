@@ -8537,20 +8537,33 @@ document.getElementById('zoom-reset').addEventListener('click', resetZoom);
     try { localStorage.setItem(key, val ? '1' : '0'); } catch (e) { /* ignore */ }
   }
 
+  // While a panel is collapsing/expanding, its grid column is actively
+  // mid-transition -- sample positionToggles() on every animation frame
+  // for the duration so the buttons visually track the real, currently-
+  // interpolated edge instead of jumping to the final spot only once the
+  // transition ends.
+  function chasePanelEdges(durationMs) {
+    const start = performance.now();
+    function frame(now) {
+      positionToggles();
+      if (now - start < durationMs) requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  }
+
   function applyLeft(collapsed) {
     appEl.classList.toggle('collapse-left', collapsed);
     leftBtn.setAttribute('aria-label', collapsed ? 'Expand left panel' : 'Collapse left panel');
     leftBtn.title = collapsed ? 'Expand left panel' : 'Collapse left panel';
-    // Leaflet needs to know its container size changed, and the buttons
-    // need to re-track the panel's now-moved edge, once the collapse
-    // transition finishes.
-    setTimeout(() => { map.invalidateSize(); positionToggles(); }, 260);
+    chasePanelEdges(300);
+    setTimeout(() => map.invalidateSize(), 260);
   }
   function applyRight(collapsed) {
     appEl.classList.toggle('collapse-right', collapsed);
     rightBtn.setAttribute('aria-label', collapsed ? 'Expand right panel' : 'Collapse right panel');
     rightBtn.title = collapsed ? 'Expand right panel' : 'Collapse right panel';
-    setTimeout(() => { map.invalidateSize(); positionToggles(); }, 260);
+    chasePanelEdges(300);
+    setTimeout(() => map.invalidateSize(), 260);
   }
 
   applyLeft(readState('panelCollapsedLeft'));
