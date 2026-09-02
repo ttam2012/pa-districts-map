@@ -8501,6 +8501,7 @@ document.getElementById('zoom-reset').addEventListener('click', resetZoom);
 (function setupPanelToggles() {
   const appEl = document.querySelector('.app');
   const leftPanelEl = document.querySelector('.controls');
+  const rightPanelEl = document.querySelector('.detail');
   const leftBtn = document.getElementById('toggle-left-panel');
   const rightBtn = document.getElementById('toggle-right-panel');
 
@@ -8513,14 +8514,18 @@ document.getElementById('zoom-reset').addEventListener('click', resetZoom);
   function positionToggles() {
     const schoolsToggle = document.getElementById('schools-toggle');
     const lpRect = leftPanelEl.getBoundingClientRect();
+    const rpRect = rightPanelEl.getBoundingClientRect();
     const y = schoolsToggle
       ? (schoolsToggle.getBoundingClientRect().top + schoolsToggle.getBoundingClientRect().height / 2)
       : (lpRect.top + lpRect.height / 2);
-    const edgeX = lpRect.right; // moves to 0 when the left panel is collapsed
+    // Left button stays on the left panel's edge (tracks 0 when collapsed).
     leftBtn.style.top = y + 'px';
-    leftBtn.style.left = (edgeX - 14) + 'px';
+    leftBtn.style.left = (lpRect.right - 14) + 'px';
+    // Right button now sits on the right panel's own edge instead, at the
+    // same height as the left one (tracks the viewport's right edge when
+    // the right panel is collapsed).
     rightBtn.style.top = y + 'px';
-    rightBtn.style.left = (edgeX + 18) + 'px';
+    rightBtn.style.left = (rpRect.left - 14) + 'px';
   }
   positionToggles();
   window.addEventListener('resize', positionToggles);
