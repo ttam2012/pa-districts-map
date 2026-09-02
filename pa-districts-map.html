@@ -8530,19 +8530,15 @@ document.getElementById('zoom-reset').addEventListener('click', resetZoom);
     if (toggleY === null) recomputeToggleY();
     const lpRect = leftPanelEl.getBoundingClientRect();
     const rpRect = rightPanelEl.getBoundingClientRect();
-    // Left button stays on the left panel's edge, but never lets itself go
-    // past the true left edge of the screen -- once the panel collapses
-    // far enough that centering-on-the-boundary would push the button
-    // half off-screen (negative x), it clamps to sitting fully visible
-    // flush against the viewport's left edge instead.
+    // Left button stays centered on the left panel's edge, which becomes
+    // the true screen edge once the panel collapses -- deliberately left
+    // straddling that edge (roughly half showing) rather than clamped
+    // fully inward, per the desired reference look.
     leftBtn.style.top = toggleY + 'px';
-    leftBtn.style.left = Math.max(lpRect.right - 14, 4) + 'px';
-    // Right button sits on the right panel's own edge, at the same height
-    // as the left one -- same clamp, mirrored: once collapsing pushes it
-    // past the true right edge of the screen, it settles fully visible
-    // flush against that edge instead of hanging off it.
+    leftBtn.style.left = (lpRect.right - 14) + 'px';
+    // Right button: same idea, mirrored, on the right panel's own edge.
     rightBtn.style.top = toggleY + 'px';
-    rightBtn.style.left = Math.min(rpRect.left - 14, window.innerWidth - 32) + 'px';
+    rightBtn.style.left = (rpRect.left - 14) + 'px';
   }
   positionToggles();
   window.addEventListener('resize', () => { recomputeToggleY(); positionToggles(); });
