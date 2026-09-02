@@ -62,24 +62,24 @@
     transform: translateY(-50%);
     grid-row: 2;
     z-index: 25;
-    width: 22px;
-    height: 22px;
+    width: 30px;
+    height: 30px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--paper);
-    border: 1px solid var(--rule);
-    border-radius: 6px;
-    color: var(--ink-muted);
+    background: var(--accent);
+    border: 1px solid var(--accent);
+    border-radius: 7px;
+    color: #ffffff;
     cursor: pointer;
     padding: 0;
-    box-shadow: 0 1px 3px rgba(23,35,59,0.18);
-    transition: color 0.15s ease, background-color 0.15s ease;
+    box-shadow: 0 2px 8px rgba(23,35,59,0.35);
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
   }
-  .panel-toggle:hover { color: var(--ink); background: var(--bg); }
-  .panel-toggle svg { display: block; transition: transform 0.2s ease; }
-  .panel-toggle-left { grid-column: 1; right: -11px; }
-  .panel-toggle-right { grid-column: 3; left: -11px; }
+  .panel-toggle:hover { background: #c23f2c; transform: translateY(-50%) scale(1.08); box-shadow: 0 3px 10px rgba(23,35,59,0.4); }
+  .panel-toggle svg { display: block; width: 16px; height: 14px; transition: transform 0.2s ease; }
+  .panel-toggle-left { grid-column: 1; right: -15px; }
+  .panel-toggle-right { grid-column: 3; left: -15px; }
   .panel-toggle-right svg { transform: scaleX(-1); }
   .app.collapse-left .panel-toggle-left svg { transform: scaleX(-1); }
   .app.collapse-right .panel-toggle-right svg { transform: scaleX(1); }
