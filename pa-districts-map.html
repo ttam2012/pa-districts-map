@@ -50,7 +50,39 @@
     height: 100vh;
     width: 100vw;
     overflow: hidden;
+    transition: grid-template-columns 0.25s ease;
   }
+  .app.collapse-left { grid-template-columns: 0px 1fr 480px; }
+  .app.collapse-right { grid-template-columns: 290px 1fr 0px; }
+  .app.collapse-left.collapse-right { grid-template-columns: 0px 1fr 0px; }
+
+  .panel-toggle {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    grid-row: 2;
+    z-index: 25;
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    color: var(--ink-muted);
+    cursor: pointer;
+    padding: 0;
+    box-shadow: 0 1px 3px rgba(23,35,59,0.18);
+    transition: color 0.15s ease, background-color 0.15s ease;
+  }
+  .panel-toggle:hover { color: var(--ink); background: var(--bg); }
+  .panel-toggle svg { display: block; transition: transform 0.2s ease; }
+  .panel-toggle-left { grid-column: 1; right: -11px; }
+  .panel-toggle-right { grid-column: 3; left: -11px; }
+  .panel-toggle-right svg { transform: scaleX(-1); }
+  .app.collapse-left .panel-toggle-left svg { transform: scaleX(-1); }
+  .app.collapse-right .panel-toggle-right svg { transform: scaleX(1); }
   header.masthead {
     grid-column: 1 / -1;
     background: var(--primary);
@@ -103,6 +135,7 @@
     background: var(--paper);
     border-right: 1px solid var(--rule);
     overflow-y: auto;
+    overflow-x: hidden;
     padding: 22px 20px;
   }
   .section-label {
@@ -1231,12 +1264,28 @@
     .map-wrap { height: 60vh; min-height: 400px; }
     .detail { border-left: none; border-top: 1px solid var(--rule); max-height: 50vh; }
     header.masthead { flex-wrap: wrap; }
+    .panel-toggle { display: none; } /* panels stack vertically here; collapsing left/right doesn't apply */
   }
   :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 </style>
 </head>
 <body>
 <div class="app">
+
+  <button class="panel-toggle panel-toggle-left" id="toggle-left-panel" type="button" title="Collapse left panel" aria-label="Collapse left panel">
+    <svg width="14" height="12" viewBox="0 0 24 20" fill="none" aria-hidden="true">
+      <rect x="1" y="1" width="22" height="18" rx="4" stroke="currentColor" stroke-width="2"/>
+      <line x1="9" y1="1" x2="9" y2="19" stroke="currentColor" stroke-width="2"/>
+      <path d="M6.5 10 L4 7.5 M6.5 10 L4 12.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </button>
+  <button class="panel-toggle panel-toggle-right" id="toggle-right-panel" type="button" title="Collapse right panel" aria-label="Collapse right panel">
+    <svg width="14" height="12" viewBox="0 0 24 20" fill="none" aria-hidden="true">
+      <rect x="1" y="1" width="22" height="18" rx="4" stroke="currentColor" stroke-width="2"/>
+      <line x1="9" y1="1" x2="9" y2="19" stroke="currentColor" stroke-width="2"/>
+      <path d="M6.5 10 L4 7.5 M6.5 10 L4 12.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </button>
 
   <header class="masthead">
     <div class="masthead-left">
@@ -8439,6 +8488,51 @@ function resetZoom() {
 document.getElementById('zoom-in').addEventListener('click', () => map.zoomIn(1));
 document.getElementById('zoom-out').addEventListener('click', () => map.zoomOut(1));
 document.getElementById('zoom-reset').addEventListener('click', resetZoom);
+
+// Collapsible left (layer controls) and right (detail) panels -- state
+// persists across reloads via localStorage; falls back silently if
+// localStorage is unavailable (private browsing, etc.).
+(function setupPanelToggles() {
+  const appEl = document.querySelector('.app');
+  const leftBtn = document.getElementById('toggle-left-panel');
+  const rightBtn = document.getElementById('toggle-right-panel');
+
+  function readState(key) {
+    try { return localStorage.getItem(key) === '1'; } catch (e) { return false; }
+  }
+  function writeState(key, val) {
+    try { localStorage.setItem(key, val ? '1' : '0'); } catch (e) { /* ignore */ }
+  }
+
+  function applyLeft(collapsed) {
+    appEl.classList.toggle('collapse-left', collapsed);
+    leftBtn.setAttribute('aria-label', collapsed ? 'Expand left panel' : 'Collapse left panel');
+    leftBtn.title = collapsed ? 'Expand left panel' : 'Collapse left panel';
+    // Leaflet needs to know its container size changed once the collapse
+    // transition finishes, or the map stays rendered at the old size.
+    setTimeout(() => map.invalidateSize(), 260);
+  }
+  function applyRight(collapsed) {
+    appEl.classList.toggle('collapse-right', collapsed);
+    rightBtn.setAttribute('aria-label', collapsed ? 'Expand right panel' : 'Collapse right panel');
+    rightBtn.title = collapsed ? 'Expand right panel' : 'Collapse right panel';
+    setTimeout(() => map.invalidateSize(), 260);
+  }
+
+  applyLeft(readState('panelCollapsedLeft'));
+  applyRight(readState('panelCollapsedRight'));
+
+  leftBtn.addEventListener('click', () => {
+    const collapsed = !appEl.classList.contains('collapse-left');
+    applyLeft(collapsed);
+    writeState('panelCollapsedLeft', collapsed);
+  });
+  rightBtn.addEventListener('click', () => {
+    const collapsed = !appEl.classList.contains('collapse-right');
+    applyRight(collapsed);
+    writeState('panelCollapsedRight', collapsed);
+  });
+})();
 
 // Keyboard shortcuts
 document.addEventListener('keydown', (e) => {
