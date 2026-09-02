@@ -171,7 +171,11 @@ def splice_into_html(html: str, cnty_json: str, as_of: datetime.date) -> tuple[s
         pattern = re.compile(pattern_str)
         if not pattern.search(html):
             continue  # cosmetic citation text, not the data-integrity-critical part
-        new_html, n = pattern.subn(new, html, count=1)
+        # count=0 (unlimited) -- some of these, like the "Last updated" link,
+        # now appear in more than one place in the file (statewide dossier,
+        # county dossier, per-district voter-reg section) and all of them
+        # share the same underlying data snapshot, so all should update.
+        new_html, n = pattern.subn(new, html, count=0)
         if new_html != html:
             changed = True
         html = new_html

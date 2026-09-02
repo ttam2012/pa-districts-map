@@ -7670,6 +7670,9 @@ function selectCounty(name) {
         <span>D ${demPct.toFixed(1)}%</span>
         <span>${repPct.toFixed(1)}% R</span>
       </div>
+      <div style="text-align:right; margin-top:4px;">
+        <a href="https://www.pa.gov/agencies/dos/resources/voting-and-elections-resources/voting-and-election-statistics" target="_blank" rel="noopener" class="h3-updated-link">Last updated: August 31, 2026</a>
+      </div>
     </div>
 
     <div class="stats-grid">
@@ -8026,8 +8029,8 @@ function renderVoterRegSection(layer, num) {
   if (counties.length === 0) return '';
 
   let html = `<div class="detail-section voter-reg-section">
-    <h3>Voter Registration · Counties Served</h3>
-    <p class="voter-reg-blurb">Official PA Department of State data, certified for the November 4, 2025 municipal election. Each county shown is part of this district; the percentage indicates how much of that county sits inside the district.</p>`;
+    <h3><span>Voter Registration &middot; Counties Served</span><a href="https://www.pa.gov/agencies/dos/resources/voting-and-elections-resources/voting-and-election-statistics" target="_blank" rel="noopener" class="h3-updated-link">Last updated: August 31, 2026</a></h3>
+    <p class="voter-reg-blurb">Official PA Department of State county registration data. Each county shown is part of this district; the percentage indicates how much of that county sits inside the district.</p>`;
 
   // For each county the district touches, render its registration breakdown
   counties.forEach(([cntyName, fracOfCounty]) => {
