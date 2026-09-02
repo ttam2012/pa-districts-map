@@ -55,7 +55,6 @@ HTML_PATH = REPO_ROOT / "pa-districts-map.html"
 TOP_N_CANDIDATES = 10
 TOP_N_COMMITTEES = 10
 TOP_N_CONTRIBUTORS = 10
-MAX_NAME_LEN = 52  # keeps rows visually consistent; the .cf-row CSS wraps as a safety net for anything still too long
 
 OFFICE_LABELS = {
     "GOV": "Governor", "LTG": "Lt. Governor", "ATT": "Attorney General",
@@ -108,10 +107,11 @@ def clean_name(raw: str) -> str:
 
 
 def display_name(raw: str) -> str:
-    name = clean_name(raw)
-    if len(name) > MAX_NAME_LEN:
-        name = name[:MAX_NAME_LEN - 1].rstrip() + "…"
-    return htmllib.escape(name, quote=False)
+    # Full name, untruncated -- the .cf-row CSS (text-overflow: ellipsis)
+    # handles the one-line visual truncation, which adapts to actual
+    # rendered width rather than a guessed character count, and keeps the
+    # full name in the page source/DOM for anyone who inspects or copies it.
+    return htmllib.escape(clean_name(raw), quote=False)
 
 
 def money(n: float) -> str:
@@ -230,6 +230,9 @@ def render_summary(data) -> str:
 
 
 def render_candidates(data) -> str:
+    # office and $ amount are separate fixed-width columns (.cf-office /
+    # .cf-amt) so dollar figures line up across every row regardless of
+    # name or office-label length, instead of one combined string.
     rows = []
     for f in data["top_candidates"]:
         dot = "dem" if f["party"] == "DEM" else ("rep" if f["party"] == "REP" else "unk")
@@ -237,7 +240,8 @@ def render_candidates(data) -> str:
         rows.append(
             f'<div class="cf-row"><span class="pdot {dot}"></span>'
             f'<span class="council-name">{display_name(f["name"])}</span>'
-            f'<span class="council-title">{htmllib.escape(office)} &middot; {money(f["raised"])}</span></div>'
+            f'<span class="cf-office">{htmllib.escape(office)}</span>'
+            f'<span class="cf-amt">{money(f["raised"])}</span></div>'
         )
     return f'\n      <div class="council-list">\n        {"".join(rows)}\n      </div>\n      '
 
@@ -245,7 +249,7 @@ def render_candidates(data) -> str:
 def render_committees(data) -> str:
     rows = [
         f'<div class="cf-row"><span class="council-name">{display_name(f["name"])}</span>'
-        f'<span class="council-title">{money(f["raised"])}</span></div>'
+        f'<span class="cf-amt">{money(f["raised"])}</span></div>'
         for f in data["top_committees"]
     ]
     return f'\n      <div class="council-list">\n        {"".join(rows)}\n      </div>\n      '
@@ -254,7 +258,7 @@ def render_committees(data) -> str:
 def render_contributors(data) -> str:
     rows = [
         f'<div class="cf-row"><span class="council-name">{display_name(name)}</span>'
-        f'<span class="council-title">{money(amt)}</span></div>'
+        f'<span class="cf-amt">{money(amt)}</span></div>'
         for name, amt in data["top_contributors"]
     ]
     return f'\n      <div class="council-list">\n        {"".join(rows)}\n      </div>\n      '
