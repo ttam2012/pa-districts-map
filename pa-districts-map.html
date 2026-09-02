@@ -8511,24 +8511,35 @@ document.getElementById('zoom-reset').addEventListener('click', resetZoom);
   // grid area as containing block" behavior, to rule that out as a source
   // of inconsistent rendering. Recomputed on load, on resize, and after
   // each collapse/expand (the edge itself moves then).
-  function positionToggles() {
+  // The vertical position is computed ONCE (not on every animation frame)
+  // and held fixed while a panel collapses/expands. Re-measuring it live
+  // during the transition was picking up the sidebar's own content
+  // reflowing narrower (cards wrapping onto more lines as the panel
+  // shrinks), which visibly dragged the button down mid-animation even
+  // though its target row hadn't actually moved in the expanded layout.
+  let toggleY = null;
+  function recomputeToggleY() {
     const schoolsToggle = document.getElementById('schools-toggle');
     const lpRect = leftPanelEl.getBoundingClientRect();
-    const rpRect = rightPanelEl.getBoundingClientRect();
-    const y = schoolsToggle
+    toggleY = schoolsToggle
       ? (schoolsToggle.getBoundingClientRect().top + schoolsToggle.getBoundingClientRect().height / 2)
       : (lpRect.top + lpRect.height / 2);
+  }
+
+  function positionToggles() {
+    if (toggleY === null) recomputeToggleY();
+    const lpRect = leftPanelEl.getBoundingClientRect();
+    const rpRect = rightPanelEl.getBoundingClientRect();
     // Left button stays on the left panel's edge (tracks 0 when collapsed).
-    leftBtn.style.top = y + 'px';
+    leftBtn.style.top = toggleY + 'px';
     leftBtn.style.left = (lpRect.right - 14) + 'px';
-    // Right button now sits on the right panel's own edge instead, at the
-    // same height as the left one (tracks the viewport's right edge when
-    // the right panel is collapsed).
-    rightBtn.style.top = y + 'px';
+    // Right button sits on the right panel's own edge, at the same height
+    // as the left one (tracks the viewport's right edge when collapsed).
+    rightBtn.style.top = toggleY + 'px';
     rightBtn.style.left = (rpRect.left - 14) + 'px';
   }
   positionToggles();
-  window.addEventListener('resize', positionToggles);
+  window.addEventListener('resize', () => { recomputeToggleY(); positionToggles(); });
 
   function readState(key) {
     try { return localStorage.getItem(key) === '1'; } catch (e) { return false; }
