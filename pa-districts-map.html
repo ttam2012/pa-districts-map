@@ -66,7 +66,6 @@
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    grid-row: 2;
     z-index: 1000;
     pointer-events: auto;
     width: 30px;
@@ -85,8 +84,8 @@
   }
   .panel-toggle:hover { background: var(--primary-deep); transform: translateY(-50%) scale(1.08); box-shadow: 0 3px 10px rgba(23,35,59,0.4); }
   .panel-toggle svg { display: block; width: 16px; height: 14px; transition: transform 0.2s ease; }
-  .panel-toggle-left { grid-column: 1; right: -15px; top: 50%; }
-  .panel-toggle-right { grid-column: 1; right: -15px; top: calc(50% + 38px); }
+  .panel-toggle-left { left: 4px; top: 50%; }
+  .panel-toggle-right { grid-column: 3; grid-row: 2; left: -15px; top: 50%; }
   .panel-toggle-right svg { transform: scaleX(-1); }
   .app.collapse-left .panel-toggle-left svg { transform: scaleX(-1); }
   .app.collapse-right .panel-toggle-right svg { transform: scaleX(1); }
@@ -8503,6 +8502,18 @@ document.getElementById('zoom-reset').addEventListener('click', resetZoom);
   const appEl = document.querySelector('.app');
   const leftBtn = document.getElementById('toggle-left-panel');
   const rightBtn = document.getElementById('toggle-right-panel');
+
+  // Align the left-panel toggle's vertical position with the "School
+  // Districts" button in the sidebar, rather than the screen's center.
+  function alignLeftToggle() {
+    const schoolsToggle = document.getElementById('schools-toggle');
+    if (!schoolsToggle) return;
+    const appRect = appEl.getBoundingClientRect();
+    const stRect = schoolsToggle.getBoundingClientRect();
+    leftBtn.style.top = (stRect.top + stRect.height / 2 - appRect.top) + 'px';
+  }
+  alignLeftToggle();
+  window.addEventListener('resize', alignLeftToggle);
 
   function readState(key) {
     try { return localStorage.getItem(key) === '1'; } catch (e) { return false; }
