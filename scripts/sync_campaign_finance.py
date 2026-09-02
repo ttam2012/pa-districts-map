@@ -107,10 +107,8 @@ def clean_name(raw: str) -> str:
 
 
 def display_name(raw: str) -> str:
-    # Full name, untruncated -- the .cf-row CSS (text-overflow: ellipsis)
-    # handles the one-line visual truncation, which adapts to actual
-    # rendered width rather than a guessed character count, and keeps the
-    # full name in the page source/DOM for anyone who inspects or copies it.
+    # Full name, untruncated -- the .cf-row CSS wraps long names onto a
+    # second line (rather than ellipsizing) so nothing is ever cut off.
     return htmllib.escape(clean_name(raw), quote=False)
 
 
