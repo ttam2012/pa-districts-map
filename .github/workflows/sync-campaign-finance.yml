@@ -1,0 +1,34 @@
+name: Sync campaign finance data
+
+on:
+  schedule:
+    # Campaign finance filings come in continuously (not on a fixed weekly
+    # schedule like voter registration), so check daily.
+    - cron: "0 12 * * *"
+  workflow_dispatch: {}  # allow manual runs from the Actions tab
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run sync script
+        id: sync
+        run: python scripts/sync_campaign_finance.py
+
+      - name: Commit and push if changed
+        if: steps.sync.outputs.changed == 'true'
+        run: |
+          git config user.name "campaign-finance-sync-bot"
+          git config user.email "actions@github.com"
+          git add pa-districts-map.html
+          git commit -m "Sync campaign finance data as of ${{ steps.sync.outputs.as_of }}"
+          git push

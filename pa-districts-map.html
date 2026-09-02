@@ -7407,11 +7407,70 @@ function showStateDossier() {
       </ul>
     </div>`;
 
+  // Populated from PA Dept. of State's official campaign finance bulk export
+  // (pa.gov/.../campaign-finance-data), NOT scraped from any third party.
+  // scripts/sync_campaign_finance.py regenerates everything between the
+  // CF_* markers below on a schedule -- don't hand-edit those blocks, they
+  // get overwritten on the next sync.
+  const campaignFinanceTab = `
+    <div class="detail-section">
+      <h3><span>Statewide Finance Summary</span><a href="https://www.pa.gov/agencies/dos/resources/voting-and-elections-resources/campaign-finance-data" target="_blank" rel="noopener" class="h3-updated-link">Data through August 26, 2026</a></h3>
+      <p style="font-size:11px; color:var(--ink-muted); line-height:1.5; margin-bottom:8px;">Self-reported totals from candidates' and committees' 2026 filings with PA DOS. "Top Candidates" and "Top Committees" are separated using each filer's office/district data, which is imperfect — a handful of PAC filings that also carry a district code can be misclassified. Full searchable database: <a href="https://www.transparencyusa.org/pa" target="_blank" rel="noopener">TransparencyUSA</a>.</p>
+      <!-- CF_SUMMARY_START -->
+      <div class="stats-grid">
+        <div class="stat-cell">
+          <div class="stat-label">Total Raised</div>
+          <div class="stat-value">$21.3M</div>
+          <div class="stat-sub">2026 filings</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-label">Total Spent</div>
+          <div class="stat-value">$188.3M</div>
+          <div class="stat-sub">2026 filings</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-label">Active Filers</div>
+          <div class="stat-value">2,222</div>
+          <div class="stat-sub">candidates &amp; committees</div>
+        </div>
+      </div>
+      <!-- CF_SUMMARY_END -->
+    </div>
+
+    <div class="detail-section">
+      <h3>Top Candidates by Money Raised</h3>
+      <!-- CF_CANDIDATES_START -->
+      <div class="council-list">
+        <div class="council-row"><span class="pdot dem"></span><span class="council-name">Shapiro for Pennsylvania</span><span class="council-title">Governor &middot; $1,541,094</span></div><div class="council-row"><span class="pdot unk"></span><span class="council-name">United Steelworkers Political Action Fund</span><span class="council-title">State House &middot; $332,208</span></div><div class="council-row"><span class="pdot rep"></span><span class="council-name">Garrity for PA</span><span class="council-title">Governor &middot; $331,476</span></div><div class="council-row"><span class="pdot dem"></span><span class="council-name">CITIZENS FOR BOYLE</span><span class="council-title">U.S. House &middot; $221,354</span></div><div class="council-row"><span class="pdot dem"></span><span class="council-name">FRIENDS OF CHRISTOPHER THOMAS</span><span class="council-title">State Senate &middot; $10,354</span></div><div class="council-row"><span class="pdot dem"></span><span class="council-name">FRIENDS OF HADLEY HAAS</span><span class="council-title">State House &middot; $9,298</span></div><div class="council-row"><span class="pdot dem"></span><span class="council-name">Friends of Brian Wrightson</span><span class="council-title">State Senate &middot; $9,253</span></div><div class="council-row"><span class="pdot dem"></span><span class="council-name">Friends of Jennifer O'Mara</span><span class="council-title">State House &middot; $9,139</span></div><div class="council-row"><span class="pdot dem"></span><span class="council-name">FRIENDS OF ARVIND VENKAT</span><span class="council-title">State House &middot; $9,005</span></div><div class="council-row"><span class="pdot dem"></span><span class="council-name">FRIENDS OF ELIZABETH MORO</span><span class="council-title">State House &middot; $8,741</span></div>
+      </div>
+      <!-- CF_CANDIDATES_END -->
+    </div>
+
+    <div class="detail-section">
+      <h3>Top Committees &amp; PACs by Money Raised</h3>
+      <!-- CF_COMMITTEES_START -->
+      <div class="council-list">
+        <div class="council-row"><span class="council-name">AMERICAN FEDERATION OF TEACHERS, AFL-CIO COPE (AFT/…</span><span class="council-title">$2,790,200</span></div><div class="council-row"><span class="council-name">FOR OUR FUTURE</span><span class="council-title">$1,790,098</span></div><div class="council-row"><span class="council-name">Progressive Turnout Project</span><span class="council-title">$1,440,694</span></div><div class="council-row"><span class="council-name">AFSCME PEOPLE PUBLIC EMP ORG TO PROMOTE LEG EQUALITY</span><span class="council-title">$944,464</span></div><div class="council-row"><span class="council-name">THE PRESIDENTIAL COALITION, LLC</span><span class="council-title">$718,092</span></div><div class="council-row"><span class="council-name">MCGUIREWOODS FEDERAL PAC (FEDERAL)</span><span class="council-title">$597,169</span></div><div class="council-row"><span class="council-name">PA LABORERS JOBS PAC</span><span class="council-title">$524,165</span></div><div class="council-row"><span class="council-name">LOCAL 0420 STEAMFITTERS UNION COPE COM</span><span class="council-title">$502,107</span></div><div class="council-row"><span class="council-name">The Home Depot Inc. Political Action Committee</span><span class="council-title">$433,922</span></div><div class="council-row"><span class="council-name">LOCAL 0690 PLUMBERS UNION POL ACTION FUND</span><span class="council-title">$425,738</span></div>
+      </div>
+      <!-- CF_COMMITTEES_END -->
+    </div>
+
+    <div class="detail-section">
+      <h3>Top Contributors</h3>
+      <p style="font-size:11px; color:var(--ink-muted); line-height:1.5; margin-bottom:8px;">Aggregated by contributor name as reported — PA's data has no unique donor ID, so near-duplicate name spellings may appear as separate entries.</p>
+      <!-- CF_CONTRIBUTORS_START -->
+      <div class="council-list">
+        <div class="council-row"><span class="council-name">Jeffrey Yass</span><span class="council-title">$16,500,000</span></div><div class="council-row"><span class="council-name">STUDENTS FIRST PAC</span><span class="council-title">$7,450,000</span></div><div class="council-row"><span class="council-name">MOVEMENT VOTER PAC</span><span class="council-title">$6,948,224</span></div><div class="council-row"><span class="council-name">SHAPIRO FOR PENNSYLVANIA</span><span class="council-title">$3,982,899</span></div><div class="council-row"><span class="council-name">LEXINGTON FUND</span><span class="council-title">$3,400,000</span></div><div class="council-row"><span class="council-name">REPUBLICAN STATE LEADERSHIP COMMITTEE</span><span class="council-title">$3,346,706</span></div><div class="council-row"><span class="council-name">AMERICAN CONSERVATIVE FUND</span><span class="council-title">$3,041,000</span></div><div class="council-row"><span class="council-name">CITIZENS ALLIANCE PAC</span><span class="council-title">$2,794,702</span></div><div class="council-row"><span class="council-name">Senate Republican Campaign Committee</span><span class="council-title">$2,639,984</span></div><div class="council-row"><span class="council-name">OPERATORS FOR SKILL PAC</span><span class="council-title">$2,302,300</span></div>
+      </div>
+      <!-- CF_CONTRIBUTORS_END -->
+    </div>`;
+
   renderDetailTabs(headerHtml, [
     { id: 'overview', label: 'Overview', html: overviewTab },
     { id: 'voting', label: 'Elections & Voting', html: votingTab },
     { id: 'economy', label: 'People & Economy', html: peopleEconomyTab },
     { id: 'landscape', label: 'Political Landscape', html: landscapeTab },
+    { id: 'finance', label: 'Campaign Finance', html: campaignFinanceTab },
   ], 'state');
 
   detailEl.insertAdjacentHTML('beforeend', `
