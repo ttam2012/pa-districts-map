@@ -86,7 +86,7 @@
   .panel-toggle:hover { background: var(--primary-deep); opacity: 1; transform: translateY(-50%) scale(1.08); box-shadow: 0 2px 6px rgba(23,35,59,0.3); }
   .panel-toggle svg { display: block; width: 12px; height: 10px; transition: transform 0.2s ease; }
   .panel-toggle-left { grid-column: 1; grid-row: 2; right: -11px; top: 50%; }
-  .panel-toggle-right { grid-column: 3; grid-row: 2; left: -11px; top: 50%; }
+  .panel-toggle-right { grid-column: 1; grid-row: 2; right: -37px; top: 50%; }
   .panel-toggle-right svg { transform: scaleX(-1); }
   .app.collapse-left .panel-toggle-left svg { transform: scaleX(-1); }
   .app.collapse-right .panel-toggle-right svg { transform: scaleX(1); }
@@ -8511,7 +8511,9 @@ document.getElementById('zoom-reset').addEventListener('click', resetZoom);
     if (!schoolsToggle) return;
     const appRect = appEl.getBoundingClientRect();
     const stRect = schoolsToggle.getBoundingClientRect();
-    leftBtn.style.top = (stRect.top + stRect.height / 2 - appRect.top) + 'px';
+    const y = (stRect.top + stRect.height / 2 - appRect.top) + 'px';
+    leftBtn.style.top = y;
+    rightBtn.style.top = y; // keep both buttons aligned at the same height
   }
   alignLeftToggle();
   window.addEventListener('resize', alignLeftToggle);
