@@ -67,12 +67,12 @@
     transform: translateY(-50%);
     z-index: 1000;
     pointer-events: auto;
-    width: 28px;
-    height: 28px;
+    width: 24px;
+    height: 24px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--accent);
+    background: var(--primary);
     border: 2px solid #ffffff;
     border-radius: 50%;
     color: #ffffff;
@@ -82,8 +82,8 @@
     box-shadow: 0 2px 8px rgba(23,35,59,0.45);
     transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
   }
-  .panel-toggle:hover { background: var(--primary-deep); opacity: 1; transform: translateY(-50%) scale(1.08); box-shadow: 0 2px 6px rgba(23,35,59,0.3); }
-  .panel-toggle svg { display: block; width: 14px; height: 12px; transition: transform 0.2s ease; }
+  .panel-toggle:hover { background: #ff7f50; opacity: 1; transform: translateY(-50%) scale(1.08); box-shadow: 0 2px 6px rgba(23,35,59,0.3); }
+  .panel-toggle svg { display: block; width: 12px; height: 10px; transition: transform 0.2s ease; }
   /* top/left are set directly via JS (position: fixed, computed from the
      controls panel's real on-screen edge) -- see setupPanelToggles(). */
   .panel-toggle-right svg { transform: scaleX(-1); }
@@ -8539,14 +8539,14 @@ document.getElementById('zoom-reset').addEventListener('click', resetZoom);
     // matter how the CSS was adjusted. When collapsed, the edge IS the
     // screen edge by definition, so just say so directly.
     if (!isTransitioning && appEl.classList.contains('collapse-left')) {
-      leftBtn.style.left = '-14px';
+      leftBtn.style.left = '-12px';
     } else {
-      leftBtn.style.left = (leftPanelEl.getBoundingClientRect().right - 14) + 'px';
+      leftBtn.style.left = (leftPanelEl.getBoundingClientRect().right - 12) + 'px';
     }
     if (!isTransitioning && appEl.classList.contains('collapse-right')) {
-      rightBtn.style.left = (window.innerWidth - 14) + 'px';
+      rightBtn.style.left = (window.innerWidth - 12) + 'px';
     } else {
-      rightBtn.style.left = (rightPanelEl.getBoundingClientRect().left - 14) + 'px';
+      rightBtn.style.left = (rightPanelEl.getBoundingClientRect().left - 12) + 'px';
     }
   }
   positionToggles();
