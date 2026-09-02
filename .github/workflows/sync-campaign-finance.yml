@@ -30,5 +30,13 @@ jobs:
           git config user.name "campaign-finance-sync-bot"
           git config user.email "actions@github.com"
           git add pa-districts-map.html
+          # The script's own changed=true is a hint, not a guarantee (e.g. a
+          # regenerated-but-byte-identical file); verify an actual staged
+          # diff exists before committing, so a false positive can't fail
+          # the job with "nothing to commit".
+          if git diff --staged --quiet; then
+            echo "No actual file changes despite changed=true -- skipping commit."
+            exit 0
+          fi
           git commit -m "Sync campaign finance data as of ${{ steps.sync.outputs.as_of }}"
           git push
