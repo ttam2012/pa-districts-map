@@ -7181,6 +7181,7 @@ function computeStatewideVoterReg() {
 }
 
 function showStateDossier() {
+  if (window.expandRightPanelIfCollapsed) window.expandRightPanelIfCollapsed();
   const vr = computeStatewideVoterReg();
   const vrDPct = (vr.d / vr.t * 100).toFixed(1);
   const vrRPct = (vr.r / vr.t * 100).toFixed(1);
@@ -7677,6 +7678,7 @@ function renderOfficialSections(officials, governingLabel) {
 }
 
 function selectCity(name) {
+  if (window.expandRightPanelIfCollapsed) window.expandRightPanelIfCollapsed();
   document.getElementById('state-toggle').classList.remove('active');
   document.getElementById('township-toggle').classList.remove('active');
   document.getElementById('schools-toggle').classList.remove('active');
@@ -7779,6 +7781,7 @@ function previewCity(name) {
 }
 
 function selectCounty(name) {
+  if (window.expandRightPanelIfCollapsed) window.expandRightPanelIfCollapsed();
   document.getElementById('state-toggle').classList.remove('active');
   document.getElementById('township-toggle').classList.remove('active');
   document.getElementById('schools-toggle').classList.remove('active');
@@ -7888,6 +7891,7 @@ function previewCounty(name) {
 }
 
 function selectTownship(id) {
+  if (window.expandRightPanelIfCollapsed) window.expandRightPanelIfCollapsed();
   document.getElementById('state-toggle').classList.remove('active');
   document.getElementById('township-toggle').classList.add('active');
   document.getElementById('schools-toggle').classList.remove('active');
@@ -7970,6 +7974,7 @@ function previewTownship(id) {
 }
 
 function selectSchoolDistrict(id) {
+  if (window.expandRightPanelIfCollapsed) window.expandRightPanelIfCollapsed();
   document.getElementById('state-toggle').classList.remove('active');
   document.getElementById('township-toggle').classList.remove('active');
   document.getElementById('schools-toggle').classList.add('active');
@@ -8057,6 +8062,7 @@ function previewSchoolDistrict(id) {
 }
 
 function selectFeature(layer, num) {
+  if (window.expandRightPanelIfCollapsed) window.expandRightPanelIfCollapsed();
   document.getElementById('state-toggle').classList.remove('active');
   document.getElementById('township-toggle').classList.remove('active');
   document.getElementById('schools-toggle').classList.remove('active');
@@ -8603,6 +8609,16 @@ document.getElementById('zoom-reset').addEventListener('click', resetZoom);
     chasePanelEdges(300);
     setTimeout(() => map.invalidateSize(), 260);
   }
+
+  // Exposed so the district/county/etc. select* functions can re-open the
+  // right panel automatically when the user clicks something on the map
+  // while it's collapsed, instead of populating a panel they can't see.
+  window.expandRightPanelIfCollapsed = function() {
+    if (appEl.classList.contains('collapse-right')) {
+      applyRight(false);
+      writeState('panelCollapsedRight', false);
+    }
+  };
 
   applyLeft(readState('panelCollapsedLeft'));
   applyRight(readState('panelCollapsedRight'));
