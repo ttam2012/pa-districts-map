@@ -68,24 +68,25 @@
     transform: translateY(-50%);
     z-index: 1000;
     pointer-events: auto;
-    width: 30px;
-    height: 30px;
+    width: 22px;
+    height: 22px;
     display: flex;
     align-items: center;
     justify-content: center;
     background: var(--primary);
     border: 1px solid var(--primary);
-    border-radius: 7px;
+    border-radius: 6px;
     color: #ffffff;
+    opacity: 0.75;
     cursor: pointer;
     padding: 0;
-    box-shadow: 0 2px 8px rgba(23,35,59,0.35);
-    transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+    box-shadow: 0 1px 4px rgba(23,35,59,0.22);
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease, opacity 0.15s ease;
   }
-  .panel-toggle:hover { background: var(--primary-deep); transform: translateY(-50%) scale(1.08); box-shadow: 0 3px 10px rgba(23,35,59,0.4); }
-  .panel-toggle svg { display: block; width: 16px; height: 14px; transition: transform 0.2s ease; }
-  .panel-toggle-left { left: 4px; top: 50%; }
-  .panel-toggle-right { grid-column: 3; grid-row: 2; left: -15px; top: 50%; }
+  .panel-toggle:hover { background: var(--primary-deep); opacity: 1; transform: translateY(-50%) scale(1.08); box-shadow: 0 2px 6px rgba(23,35,59,0.3); }
+  .panel-toggle svg { display: block; width: 12px; height: 10px; transition: transform 0.2s ease; }
+  .panel-toggle-left { grid-column: 1; grid-row: 2; right: -11px; top: 50%; }
+  .panel-toggle-right { grid-column: 3; grid-row: 2; left: -11px; top: 50%; }
   .panel-toggle-right svg { transform: scaleX(-1); }
   .app.collapse-left .panel-toggle-left svg { transform: scaleX(-1); }
   .app.collapse-right .panel-toggle-right svg { transform: scaleX(1); }
@@ -8502,18 +8503,6 @@ document.getElementById('zoom-reset').addEventListener('click', resetZoom);
   const appEl = document.querySelector('.app');
   const leftBtn = document.getElementById('toggle-left-panel');
   const rightBtn = document.getElementById('toggle-right-panel');
-
-  // Align the left-panel toggle's vertical position with the "School
-  // Districts" button in the sidebar, rather than the screen's center.
-  function alignLeftToggle() {
-    const schoolsToggle = document.getElementById('schools-toggle');
-    if (!schoolsToggle) return;
-    const appRect = appEl.getBoundingClientRect();
-    const stRect = schoolsToggle.getBoundingClientRect();
-    leftBtn.style.top = (stRect.top + stRect.height / 2 - appRect.top) + 'px';
-  }
-  alignLeftToggle();
-  window.addEventListener('resize', alignLeftToggle);
 
   function readState(key) {
     try { return localStorage.getItem(key) === '1'; } catch (e) { return false; }
