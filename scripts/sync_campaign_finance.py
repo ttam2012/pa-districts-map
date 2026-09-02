@@ -55,7 +55,7 @@ HTML_PATH = REPO_ROOT / "pa-districts-map.html"
 TOP_N_CANDIDATES = 10
 TOP_N_COMMITTEES = 10
 TOP_N_CONTRIBUTORS = 10
-MAX_NAME_LEN = 52  # keep council-row names to one line; longer names are ellipsized
+MAX_NAME_LEN = 52  # keeps rows visually consistent; the .cf-row CSS wraps as a safety net for anything still too long
 
 OFFICE_LABELS = {
     "GOV": "Governor", "LTG": "Lt. Governor", "ATT": "Attorney General",
@@ -235,7 +235,7 @@ def render_candidates(data) -> str:
         dot = "dem" if f["party"] == "DEM" else ("rep" if f["party"] == "REP" else "unk")
         office = OFFICE_LABELS.get(f["office"], f["office"] or "—")
         rows.append(
-            f'<div class="council-row"><span class="pdot {dot}"></span>'
+            f'<div class="cf-row"><span class="pdot {dot}"></span>'
             f'<span class="council-name">{display_name(f["name"])}</span>'
             f'<span class="council-title">{htmllib.escape(office)} &middot; {money(f["raised"])}</span></div>'
         )
@@ -244,7 +244,7 @@ def render_candidates(data) -> str:
 
 def render_committees(data) -> str:
     rows = [
-        f'<div class="council-row"><span class="council-name">{display_name(f["name"])}</span>'
+        f'<div class="cf-row"><span class="council-name">{display_name(f["name"])}</span>'
         f'<span class="council-title">{money(f["raised"])}</span></div>'
         for f in data["top_committees"]
     ]
@@ -253,7 +253,7 @@ def render_committees(data) -> str:
 
 def render_contributors(data) -> str:
     rows = [
-        f'<div class="council-row"><span class="council-name">{display_name(name)}</span>'
+        f'<div class="cf-row"><span class="council-name">{display_name(name)}</span>'
         f'<span class="council-title">{money(amt)}</span></div>'
         for name, amt in data["top_contributors"]
     ]
