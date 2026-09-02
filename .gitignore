@@ -13,6 +13,8 @@
 !scripts/**
 !.github/
 !.github/**
+!images/
+!images/**
 
 # ...except the script's own downloaded-file cache and Python cruft.
 scripts/_currentvotestats.xlsx
