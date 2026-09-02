@@ -7674,21 +7674,39 @@ function selectCounty(name) {
         <span>D ${demPct.toFixed(1)}%</span>
         <span>${repPct.toFixed(1)}% R</span>
       </div>
-      <div style="text-align:right; margin-top:4px;">
-        <a href="https://www.pa.gov/agencies/dos/resources/voting-and-elections-resources/voting-and-election-statistics" target="_blank" rel="noopener" class="h3-updated-link">Last updated: August 31, 2026</a>
-      </div>
     </div>
 
-    <div class="stats-grid">
+    <div class="stats-grid" style="margin-top:8px;">
+      <div class="stat-cell">
+        <div class="stat-label">Democrats</div>
+        <div class="stat-value" style="color: var(--dem);">${reg.d.toLocaleString()}</div>
+        <div class="stat-sub">${demPct.toFixed(1)}% of registered</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-label">Republicans</div>
+        <div class="stat-value" style="color: var(--rep);">${reg.r.toLocaleString()}</div>
+        <div class="stat-sub">${repPct.toFixed(1)}% of registered</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-label">No Aff. + Other</div>
+        <div class="stat-value">${reg.o.toLocaleString()}</div>
+        <div class="stat-sub">${(reg.t ? reg.o / reg.t * 100 : 0).toFixed(1)}% of registered</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-label">Total Registered</div>
+        <div class="stat-value">${reg.t.toLocaleString()}</div>
+        <div class="stat-sub">PA Dept. of State</div>
+      </div>
+    </div>
+    <div style="text-align:right; margin-top:6px;">
+      <a href="https://www.pa.gov/agencies/dos/resources/voting-and-elections-resources/voting-and-election-statistics" target="_blank" rel="noopener" class="h3-updated-link">Last updated: August 31, 2026</a>
+    </div>
+
+    <div class="stats-grid" style="margin-top:12px;">
       <div class="stat-cell">
         <div class="stat-label">Population</div>
         <div class="stat-value">${info.population ? info.population.toLocaleString() : '—'}</div>
         <div class="stat-sub">2024 est.</div>
-      </div>
-      <div class="stat-cell">
-        <div class="stat-label">Registered Voters</div>
-        <div class="stat-value">${reg.t.toLocaleString()}</div>
-        <div class="stat-sub">${reg.o.toLocaleString()} other/no affiliation</div>
       </div>
     </div>
   `;
