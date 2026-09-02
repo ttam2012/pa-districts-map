@@ -774,7 +774,7 @@
 
   .detail-tabs {
     display: flex;
-    gap: 4px;
+    gap: 3px;
     margin: 0 0 -1px 0;
     position: relative;
     z-index: 2;
@@ -783,15 +783,19 @@
     font-family: 'IBM Plex Mono', monospace;
     font-size: 9.5px;
     text-transform: uppercase;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.04em;
     color: var(--ink-muted);
     background: var(--bg);
     border: 1px solid var(--rule);
     border-radius: 7px 7px 0 0;
-    padding: 7px 11px 8px;
+    padding: 7px 9px 8px;
     cursor: pointer;
     position: relative;
     white-space: nowrap;
+    flex: 0 1 auto;
+    min-width: 0;
+    text-overflow: ellipsis;
+    overflow: hidden;
     transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
   }
   .detail-tab:hover:not(.active) {
@@ -7505,10 +7509,10 @@ function showStateDossier() {
 
   renderDetailTabs(headerHtml, [
     { id: 'overview', label: 'Overview', html: overviewTab },
-    { id: 'voting', label: 'Elections & Voting', html: votingTab },
-    { id: 'economy', label: 'People & Economy', html: peopleEconomyTab },
-    { id: 'landscape', label: 'Political Landscape', html: landscapeTab },
-    { id: 'finance', label: 'Campaign Finance', html: campaignFinanceTab },
+    { id: 'voting', label: 'Voting', html: votingTab },
+    { id: 'economy', label: 'Economy', html: peopleEconomyTab },
+    { id: 'landscape', label: 'Landscape', html: landscapeTab },
+    { id: 'finance', label: 'Finance', html: campaignFinanceTab },
   ], 'state');
 
   detailEl.insertAdjacentHTML('beforeend', `
