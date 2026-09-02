@@ -8560,6 +8560,16 @@ document.getElementById('zoom-reset').addEventListener('click', resetZoom);
     requestAnimationFrame(frame);
   }
 
+  // Belt-and-suspenders: ResizeObserver reports the panels' actual box size
+  // the moment it changes, independent of any assumed transition duration
+  // -- catches the true final resting position even if the rAF chase above
+  // stops a beat early or late relative to the real CSS transition.
+  if (typeof ResizeObserver !== 'undefined') {
+    const ro = new ResizeObserver(() => positionToggles());
+    ro.observe(leftPanelEl);
+    ro.observe(rightPanelEl);
+  }
+
   function applyLeft(collapsed) {
     appEl.classList.toggle('collapse-left', collapsed);
     leftBtn.setAttribute('aria-label', collapsed ? 'Expand left panel' : 'Collapse left panel');
