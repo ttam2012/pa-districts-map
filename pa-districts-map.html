@@ -8504,6 +8504,18 @@ document.getElementById('zoom-reset').addEventListener('click', resetZoom);
   const leftBtn = document.getElementById('toggle-left-panel');
   const rightBtn = document.getElementById('toggle-right-panel');
 
+  // Align the left-panel toggle's vertical position with the "U.S. House"
+  // row under "Legislative Districts" in the sidebar.
+  function alignLeftToggle() {
+    const houseToggle = document.querySelector('[data-base="house"]');
+    if (!houseToggle) return;
+    const appRect = appEl.getBoundingClientRect();
+    const htRect = houseToggle.getBoundingClientRect();
+    leftBtn.style.top = (htRect.top + htRect.height / 2 - appRect.top) + 'px';
+  }
+  alignLeftToggle();
+  window.addEventListener('resize', alignLeftToggle);
+
   function readState(key) {
     try { return localStorage.getItem(key) === '1'; } catch (e) { return false; }
   }
