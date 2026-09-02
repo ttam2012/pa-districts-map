@@ -8523,19 +8523,31 @@ document.getElementById('zoom-reset').addEventListener('click', resetZoom);
       : (lpRect.top + lpRect.height / 2);
   }
 
+  let isTransitioning = false;
+
   function positionToggles() {
     if (toggleY === null) recomputeToggleY();
-    const lpRect = leftPanelEl.getBoundingClientRect();
-    const rpRect = rightPanelEl.getBoundingClientRect();
-    // Left button stays centered on the left panel's edge, which becomes
-    // the true screen edge once the panel collapses -- deliberately left
-    // straddling that edge (roughly half showing) rather than clamped
-    // fully inward, per the desired reference look.
     leftBtn.style.top = toggleY + 'px';
-    leftBtn.style.left = (lpRect.right - 14) + 'px';
-    // Right button: same idea, mirrored, on the right panel's own edge.
     rightBtn.style.top = toggleY + 'px';
-    rightBtn.style.left = (rpRect.left - 14) + 'px';
+
+    // While actively collapsing/expanding, keep following the real
+    // measured edge every frame (smooth motion in sync with the panel).
+    // Once settled, hard-code the fully-collapsed target instead of
+    // trusting measured geometry -- some residual layout factor (border,
+    // scrollbar gutter, sub-pixel rounding, whatever) has kept the
+    // measured rect from ever reporting a true 0/viewport-width edge, no
+    // matter how the CSS was adjusted. When collapsed, the edge IS the
+    // screen edge by definition, so just say so directly.
+    if (!isTransitioning && appEl.classList.contains('collapse-left')) {
+      leftBtn.style.left = '-14px';
+    } else {
+      leftBtn.style.left = (leftPanelEl.getBoundingClientRect().right - 14) + 'px';
+    }
+    if (!isTransitioning && appEl.classList.contains('collapse-right')) {
+      rightBtn.style.left = (window.innerWidth - 14) + 'px';
+    } else {
+      rightBtn.style.left = (rightPanelEl.getBoundingClientRect().left - 14) + 'px';
+    }
   }
   positionToggles();
   window.addEventListener('resize', () => { recomputeToggleY(); positionToggles(); });
@@ -8553,10 +8565,16 @@ document.getElementById('zoom-reset').addEventListener('click', resetZoom);
   // interpolated edge instead of jumping to the final spot only once the
   // transition ends.
   function chasePanelEdges(durationMs) {
+    isTransitioning = true;
     const start = performance.now();
     function frame(now) {
       positionToggles();
-      if (now - start < durationMs) requestAnimationFrame(frame);
+      if (now - start < durationMs) {
+        requestAnimationFrame(frame);
+      } else {
+        isTransitioning = false;
+        positionToggles(); // one final call to snap to the hard-coded target
+      }
     }
     requestAnimationFrame(frame);
   }
