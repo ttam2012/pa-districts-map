@@ -1384,6 +1384,7 @@
         <span class="check"></span>
         <span class="swatch county"></span>
         <span class="label-text">County borders</span>
+        <button type="button" class="label-btn" data-label-overlay="county" title="Show county names" aria-pressed="false">Aa</button>
       </div>
 
       <div class="overlay-toggle" data-overlay="township" id="overlay-township">
@@ -1567,7 +1568,7 @@ let overlays = { house: false, senate: false, statehouse: false, county: true, t
 // Independent of `overlays` (the border toggles) — controls whether each layer's district
 // number/name labels are drawn, regardless of whether that layer's borders are showing or
 // it's the current base layer. Off by default so turning this on is an explicit opt-in.
-let overlayLabels = { house: false, senate: false, statehouse: false, township: false, schools: false };
+let overlayLabels = { house: false, senate: false, statehouse: false, township: false, schools: false, county: false };
 let baseOpacity = 0.5;
 let selected = null;
 
@@ -6925,6 +6926,7 @@ function refreshLabels() {
   // the representative's last name added next to the district number.
   if (overlayLabels.schools && baseLayer !== 'schools') drawSchoolLabels();
   if (overlayLabels.township && baseLayer !== 'township') drawTownshipLabels();
+  if (overlayLabels.county && baseLayer !== 'county') drawCountyLabels();
   if (overlayLabels.house && baseLayer !== 'house') drawChamberLabels('house', true);
   if (overlayLabels.senate && baseLayer !== 'senate') drawChamberLabels('senate', true);
   if (overlayLabels.statehouse && baseLayer !== 'statehouse') drawChamberLabels('statehouse', true);
