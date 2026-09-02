@@ -1,0 +1,37 @@
+name: Sync voter registration data
+
+on:
+  schedule:
+    # PA DOS updates its county registration export every Monday.
+    # Run Tuesday 13:00 UTC (~9am ET) to give it a day to land.
+    - cron: "0 13 * * 2"
+  workflow_dispatch: {}  # allow manual runs from the Actions tab
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install openpyxl
+
+      - name: Run sync script
+        id: sync
+        run: python scripts/sync_voter_reg.py
+
+      - name: Commit and push if changed
+        if: steps.sync.outputs.changed == 'true'
+        run: |
+          git config user.name "voter-reg-sync-bot"
+          git config user.email "actions@github.com"
+          git add pa-districts-map.html
+          git commit -m "Sync voter registration data as of ${{ steps.sync.outputs.as_of }} (${{ steps.sync.outputs.total }} registered)"
+          git push

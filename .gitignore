@@ -1,0 +1,19 @@
+# This repo is scoped to just the public deliverable and the voter-
+# registration sync automation -- everything else in this working
+# directory (screenshots, scrape scripts, raw geojson/JSON dumps, etc.)
+# stays local and untracked.
+*
+
+!.gitignore
+!README.md
+!index.html
+!pa-districts-map.html
+!scripts/
+!scripts/**
+!.github/
+!.github/**
+
+# ...except the script's own downloaded-file cache and Python cruft.
+scripts/_currentvotestats.xlsx
+scripts/__pycache__/
+scripts/__pycache__/**
