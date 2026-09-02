@@ -8538,9 +8538,11 @@ document.getElementById('zoom-reset').addEventListener('click', resetZoom);
     leftBtn.style.top = toggleY + 'px';
     leftBtn.style.left = Math.max(lpRect.right - 14, 4) + 'px';
     // Right button sits on the right panel's own edge, at the same height
-    // as the left one (tracks the viewport's right edge when collapsed).
+    // as the left one -- same clamp, mirrored: once collapsing pushes it
+    // past the true right edge of the screen, it settles fully visible
+    // flush against that edge instead of hanging off it.
     rightBtn.style.top = toggleY + 'px';
-    rightBtn.style.left = (rpRect.left - 14) + 'px';
+    rightBtn.style.left = Math.min(rpRect.left - 14, window.innerWidth - 32) + 'px';
   }
   positionToggles();
   window.addEventListener('resize', () => { recomputeToggleY(); positionToggles(); });
