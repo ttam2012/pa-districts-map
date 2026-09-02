@@ -145,27 +145,36 @@ def splice_into_html(html: str, cnty_json: str, as_of: datetime.date) -> tuple[s
         changed = True
     html = new_html
 
-    # 2. The citation strings tied directly to this data. Matched on their
-    #    full, unique surrounding text -- never a bare date string -- so an
-    #    unrelated "Nov 2025" elsewhere (e.g. an official's term date) can
-    #    never be touched by accident.
-    label = as_of.strftime("%b %Y")  # e.g. "Aug 2026"
-    replacements = [
-        ("<span>Registered voters (Nov 2025)</span>",
+    # 2. The citation strings tied directly to this data. Each is matched
+    #    structurally (a regex anchored to its unique surrounding markup)
+    #    rather than against one fixed old value -- so every weekly run
+    #    updates them correctly regardless of what date they currently show,
+    #    not just the very first run after this script was introduced. An
+    #    unrelated date elsewhere in the file (e.g. an official's term) can
+    #    never be touched, since the surrounding markup is always matched too.
+    label = as_of.strftime("%b %Y")            # e.g. "Aug 2026"
+    full_label = as_of.strftime("%B %-d, %Y") if sys.platform != "win32" \
+        else as_of.strftime("%B %#d, %Y")      # e.g. "August 31, 2026"
+    month_year = r"[A-Za-z]+ \d{4}"
+    full_date = r"[A-Za-z]+ \d{1,2}, \d{4}"
+    citation_patterns = [
+        (rf"<span>Registered voters \({month_year}\)</span>",
          f"<span>Registered voters ({label})</span>"),
-        ('<div class="stat-sub">Nov 2025 (PA DOS)</div>',
+        (rf'<div class="stat-sub">{month_year} \(PA DOS\)</div>',
          f'<div class="stat-sub">{label} (PA DOS)</div>'),
-        ("Sources: PA Dept. of State (voter registration Nov 2025 · 2024 election returns)",
+        (rf"Sources: PA Dept\. of State \(voter registration {month_year} · 2024 election returns\)",
          f"Sources: PA Dept. of State (voter registration {label} · 2024 election returns)"),
+        (rf'(class="h3-updated-link">Last updated: ){full_date}(</a>)',
+         rf"\g<1>{full_label}\g<2>"),
     ]
-    for old, new in replacements:
-        if old in html:
-            html = html.replace(old, new, 1)
-            if old != new:
-                changed = True
-        # Silently skip ones that no longer match verbatim (e.g. the label
-        # already reads the current month) -- these are cosmetic, not the
-        # data-integrity-critical part of this script.
+    for pattern_str, new in citation_patterns:
+        pattern = re.compile(pattern_str)
+        if not pattern.search(html):
+            continue  # cosmetic citation text, not the data-integrity-critical part
+        new_html, n = pattern.subn(new, html, count=1)
+        if new_html != html:
+            changed = True
+        html = new_html
 
     return html, changed
 
