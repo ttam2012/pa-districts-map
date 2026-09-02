@@ -7632,8 +7632,11 @@ function selectCounty(name) {
   const info = COUNTY_INFO[name];
   if (!info) return;
   const reg = VOTER_REG.cnty[name] || { d: 0, r: 0, o: 0, t: 0 };
-  const demPct = (reg.d + reg.r) ? (reg.d / (reg.d + reg.r)) * 100 : 50;
-  const repPct = 100 - demPct;
+  // Share of ALL registered voters (matching PA DOS's own reporting), not
+  // just the D+R subset -- excluding "no affiliation/other" from the
+  // denominator was inflating both parties' percentages.
+  const demPct = reg.t ? (reg.d / reg.t) * 100 : 0;
+  const repPct = reg.t ? (reg.r / reg.t) * 100 : 0;
   const margin = demPct - repPct;
   const marginLabel = margin >= 0 ? `D+${margin.toFixed(1)}` : `R+${Math.abs(margin).toFixed(1)}`;
   const cardClass = countyPartyClass(info.control || countyParty(name));
@@ -7665,6 +7668,7 @@ function selectCounty(name) {
       <div class="margin-bar-track">
         <div class="margin-bar-d" style="width: ${demPct.toFixed(2)}%"></div>
         <div class="margin-bar-r" style="width: ${repPct.toFixed(2)}%"></div>
+        <div style="background: #9b9486; height: 100%; width: ${(reg.t ? reg.o / reg.t * 100 : 0).toFixed(2)}%"></div>
       </div>
       <div class="margin-bar-pcts">
         <span>D ${demPct.toFixed(1)}%</span>
